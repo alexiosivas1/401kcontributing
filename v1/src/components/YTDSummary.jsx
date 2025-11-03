@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { TrendingUp, Calendar } from 'lucide-react';
 import { formatCurrency } from '../utils/calculations';
 
@@ -12,8 +13,10 @@ import { formatCurrency } from '../utils/calculations';
  * - Color-coded contributions (employee vs employer)
  * - Monthly average display
  * - Projected year-end total
+ *
+ * Performance: Memoized to prevent re-renders when props haven't changed
  */
-export function YTDSummary({
+export const YTDSummary = memo(function YTDSummary({
   ytdContributions,
   annualContributions,
   employerMatch,
@@ -184,6 +187,6 @@ export function YTDSummary({
       )}
     </div>
   );
-}
+});
 
 export default YTDSummary;

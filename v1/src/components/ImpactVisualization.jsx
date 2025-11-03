@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatCurrency, formatLargeNumber } from '../utils/calculations';
 
@@ -14,8 +15,10 @@ import { formatCurrency, formatLargeNumber } from '../utils/calculations';
  * - Visual indicators (up/down arrows)
  * - Color coding (green for increase, red for decrease)
  * - Conditional rendering (only shows when changes are made)
+ *
+ * Performance: Memoized to prevent re-renders when props haven't changed
  */
-export function ImpactVisualization({ impact, hasChanges, annualContributions }) {
+export const ImpactVisualization = memo(function ImpactVisualization({ impact, hasChanges, annualContributions }) {
   if (!hasChanges) {
     return null; // Don't show if no changes made
   }
@@ -186,6 +189,6 @@ export function ImpactVisualization({ impact, hasChanges, annualContributions })
       </div>
     </div>
   );
-}
+});
 
 export default ImpactVisualization;

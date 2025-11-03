@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { PiggyBank, TrendingUp, DollarSign } from 'lucide-react';
 import { formatCurrency, formatLargeNumber } from '../utils/calculations';
 
@@ -15,8 +16,10 @@ import { formatCurrency, formatLargeNumber } from '../utils/calculations';
  * - Visual breakdown with icons
  * - Assumptions transparency
  * - Easy-to-understand metrics
+ *
+ * Performance: Memoized to prevent re-renders when props haven't changed
  */
-export function RetirementProjection({ projection, user, hasChanges }) {
+export const RetirementProjection = memo(function RetirementProjection({ projection, user, hasChanges }) {
   const { futureValue, totalContributions, totalGrowth, yearsToRetirement } = projection;
 
   // Calculate breakdown percentages for visualization
@@ -172,6 +175,6 @@ export function RetirementProjection({ projection, user, hasChanges }) {
       </div>
     </div>
   );
-}
+});
 
 export default RetirementProjection;

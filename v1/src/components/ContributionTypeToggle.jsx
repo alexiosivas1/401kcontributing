@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { DollarSign, Percent } from 'lucide-react';
 
 /**
@@ -8,8 +9,10 @@ import { DollarSign, Percent } from 'lucide-react';
  * - Clear visual distinction between modes
  * - Accessible keyboard navigation
  * - Icons for quick recognition
+ *
+ * Performance: Memoized to prevent re-renders when props haven't changed
  */
-export function ContributionTypeToggle({ value, onChange }) {
+export const ContributionTypeToggle = memo(function ContributionTypeToggle({ value, onChange }) {
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700">
@@ -69,6 +72,6 @@ export function ContributionTypeToggle({ value, onChange }) {
       </p>
     </div>
   );
-}
+});
 
 export default ContributionTypeToggle;
