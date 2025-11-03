@@ -26,7 +26,7 @@
 @layer components {
   /* Custom component styles will go here */
   .card {
-    @apply bg-white rounded-lg shadow-md p-6;
+    @apply bg-white rounded-lg shadow-sm p-6;
     /* Optimize card rendering for better scroll performance */
     transform: translateZ(0);
     backface-visibility: hidden;
