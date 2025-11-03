@@ -1,4 +1,5 @@
 import { formatCurrency, formatPercentage } from '../utils/calculations';
+import { useThrottledCallback } from '../hooks/useThrottledCallback';
 
 /**
  * ContributionInput Component
@@ -13,6 +14,7 @@ import { formatCurrency, formatPercentage } from '../utils/calculations';
  * - Visual feedback (gradient slider)
  * - Keyboard accessible
  * - Shows current value in both formats
+ * - Performance optimized with throttled slider updates (60 FPS)
  */
 export function ContributionInput({
   type,
@@ -42,9 +44,11 @@ export function ContributionInput({
   // Calculate percentage of slider for visual fill
   const sliderPercent = ((value - min) / (max - min)) * 100;
 
-  const handleSliderChange = (e) => {
+  // Throttle slider updates to 60 FPS using requestAnimationFrame
+  // Without this, slider fires 200-300 updates/second causing jank
+  const handleSliderChange = useThrottledCallback((e) => {
     onChange(Number(e.target.value));
-  };
+  });
 
   const handleTextChange = (e) => {
     const newValue = e.target.value.replace(/[^0-9.]/g, '');
