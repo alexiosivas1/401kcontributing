@@ -30,6 +30,8 @@
     /* Optimize card rendering for better scroll performance */
     transform: translateZ(0);
     backface-visibility: hidden;
+    /* Tell browser this element's layout/style/paint are independent */
+    contain: layout style paint;
   }
 
   .input-field {
