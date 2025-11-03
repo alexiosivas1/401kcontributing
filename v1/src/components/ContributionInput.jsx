@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { formatCurrency, formatPercentage } from '../utils/calculations';
 import { useThrottledCallback } from '../hooks/useThrottledCallback';
 
@@ -15,6 +16,7 @@ import { useThrottledCallback } from '../hooks/useThrottledCallback';
  * - Keyboard accessible
  * - Shows current value in both formats
  * - Performance optimized with throttled slider updates (60 FPS)
+ * - Memoized computed values to prevent unnecessary recalculations
  */
 export function ContributionInput({
   type,
@@ -31,18 +33,24 @@ export function ContributionInput({
   const max = maxAmount;
   const step = isPercentage ? 0.5 : 10;
 
-  // Format the current value for display
-  const displayValue = isPercentage
-    ? formatPercentage(value)
-    : formatCurrency(value, 0);
+  // Format the current value for display (memoized)
+  const displayValue = useMemo(() => {
+    return isPercentage
+      ? formatPercentage(value)
+      : formatCurrency(value, 0);
+  }, [isPercentage, value]);
 
-  // Calculate annual amount for context
-  const annualAmount = isPercentage
-    ? (salary * value) / 100
-    : value * 26;
+  // Calculate annual amount for context (memoized)
+  const annualAmount = useMemo(() => {
+    return isPercentage
+      ? (salary * value) / 100
+      : value * 26;
+  }, [isPercentage, salary, value]);
 
-  // Calculate percentage of slider for visual fill
-  const sliderPercent = ((value - min) / (max - min)) * 100;
+  // Calculate percentage of slider for visual fill (memoized)
+  const sliderPercent = useMemo(() => {
+    return ((value - min) / (max - min)) * 100;
+  }, [value, min, max]);
 
   // Throttle slider updates to 60 FPS using requestAnimationFrame
   // Without this, slider fires 200-300 updates/second causing jank
