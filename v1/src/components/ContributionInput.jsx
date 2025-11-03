@@ -46,8 +46,8 @@ export function ContributionInput({
 
   // Throttle slider updates to 60 FPS using requestAnimationFrame
   // Without this, slider fires 200-300 updates/second causing jank
-  const handleSliderChange = useThrottledCallback((e) => {
-    onChange(Number(e.target.value));
+  const handleSliderChange = useThrottledCallback((value) => {
+    onChange(value);
   });
 
   const handleTextChange = (e) => {
@@ -82,7 +82,7 @@ export function ContributionInput({
           max={max}
           step={step}
           value={value}
-          onChange={handleSliderChange}
+          onChange={(e) => handleSliderChange(Number(e.target.value))}
           className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
           style={{
             background: `linear-gradient(to right, #0ea5e9 0%, #0ea5e9 ${sliderPercent}%, #e5e7eb ${sliderPercent}%, #e5e7eb 100%)`,
