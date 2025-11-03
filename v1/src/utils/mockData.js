@@ -9,8 +9,8 @@ export const mockUserData = {
   // User profile information
   user: {
     name: "Alex Johnson",
-    age: 30,
-    salary: 75000, // Annual salary in USD
+    age: 24,
+    salary: 65000, // Annual salary in USD
     retirementAge: 65, // Target retirement age
     currentBalance: 45000, // Current 401(k) balance
   },
@@ -19,16 +19,16 @@ export const mockUserData = {
   contribution: {
     type: 'percentage', // 'percentage' or 'fixed'
     amount: 10, // 10% or $X depending on type
-    employerMatchPercent: 5, // Employer matches 100% up to 5% of salary
-    employerMatchLimit: 5, // Maximum match percentage
+    employerMatchRate: 1.0, // Match rate: 1.0 = 100% match, 0.5 = 50% match
+    employerMatchCap: 5, // Maximum match: 5% of salary
   },
 
   // Year-to-date contribution data (assumes we're 9 months into the year)
   ytd: {
     monthsElapsed: 9,
-    employeeContributed: 5625, // ($75,000 * 10%) * (9/12) = $5,625
-    employerMatched: 2812.50, // ($75,000 * 5%) * (9/12) = $2,812.50
-    totalContributed: 8437.50, // Sum of employee + employer
+    employeeContributed: 4875, // ($65,000 * 10%) * (9/12) = $4,875
+    employerMatched: 2437.50, // ($65,000 * 5%) * (9/12) = $2,437.50
+    totalContributed: 7312.50, // Sum of employee + employer
   },
 
   // IRS contribution limits for 2024

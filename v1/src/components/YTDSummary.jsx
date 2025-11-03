@@ -144,7 +144,7 @@ export const YTDSummary = memo(function YTDSummary({
         <div>
           <div className="flex justify-between text-sm mb-1">
             <span className="text-gray-700">
-              Employer match ({employerMatch.percent}%)
+              Employer match ({employerMatch.rate * 100}%)
             </span>
             <span className="font-medium text-gray-900">
               {formatCurrency(ytdContributions.employer, 0)} of{' '}

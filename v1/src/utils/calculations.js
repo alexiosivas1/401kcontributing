@@ -31,21 +31,29 @@ export function calculateAnnualContribution(type, amount, salary) {
 /**
  * Calculate employer match contribution
  *
- * Typical structure: Employer matches 100% of contributions up to X% of salary
- * Example: If employer matches up to 5% and you contribute 10%,
- * employer contributes 5% (not 10%)
+ * Typical structure: Employer matches at a rate up to a cap % of salary
+ * Example: 100% match up to 5% means if you contribute 10%, employer contributes 5%
+ * Example: 50% match up to 6% means if you contribute 6%, employer contributes 3%
+ *
+ * @param employeeContribution - Annual employee contribution in dollars
+ * @param salary - Annual salary
+ * @param employerMatchRate - Match rate as decimal (1.0 = 100%, 0.5 = 50%)
+ * @param employerMatchCap - Maximum match as percentage of salary (e.g., 5 for 5%)
  */
 export function calculateEmployerMatch(
   employeeContribution,
   salary,
-  employerMatchPercent,
-  employerMatchLimit
+  employerMatchRate,
+  employerMatchCap
 ) {
-  // Maximum employer will match (in dollars)
-  const maxMatch = (salary * employerMatchLimit) / 100;
+  // Calculate the match amount based on employee contribution and match rate
+  const matchedAmount = employeeContribution * employerMatchRate;
 
-  // Employer matches dollar-for-dollar up to the limit
-  return Math.min(employeeContribution, maxMatch);
+  // Maximum employer will match (in dollars)
+  const maxMatch = (salary * employerMatchCap) / 100;
+
+  // Return the lesser of matched amount or the cap
+  return Math.min(matchedAmount, maxMatch);
 }
 
 /**
@@ -55,15 +63,15 @@ export function calculateTotalAnnualContribution(
   type,
   amount,
   salary,
-  employerMatchPercent,
-  employerMatchLimit
+  employerMatchRate,
+  employerMatchCap
 ) {
   const employeeContribution = calculateAnnualContribution(type, amount, salary);
   const employerContribution = calculateEmployerMatch(
     employeeContribution,
     salary,
-    employerMatchPercent,
-    employerMatchLimit
+    employerMatchRate,
+    employerMatchCap
   );
 
   return {
@@ -80,16 +88,16 @@ export function calculateYTDContributions(
   type,
   amount,
   salary,
-  employerMatchPercent,
-  employerMatchLimit,
+  employerMatchRate,
+  employerMatchCap,
   monthsElapsed
 ) {
   const annual = calculateTotalAnnualContribution(
     type,
     amount,
     salary,
-    employerMatchPercent,
-    employerMatchLimit
+    employerMatchRate,
+    employerMatchCap
   );
 
   const ratio = monthsElapsed / 12;

@@ -100,7 +100,7 @@ function App() {
             <div>
               <span className="text-gray-600">Employer Match:</span>{' '}
               <span className="font-medium text-green-700">
-                {employerMatch.percent}% (up to {employerMatch.limit}%)
+                {employerMatch.rate * 100}% up to ${(employerMatch.cap / 100 * user.salary).toLocaleString()} ({employerMatch.cap}% of your annual salary)
               </span>
             </div>
           </div>

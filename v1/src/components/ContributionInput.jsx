@@ -47,6 +47,11 @@ export function ContributionInput({
       : value * 26;
   }, [isPercentage, salary, value]);
 
+  // Calculate per-paycheck amount (memoized)
+  const perPaycheckAmount = useMemo(() => {
+    return annualAmount / 26; // Biweekly (26 pay periods per year)
+  }, [annualAmount]);
+
   // Calculate percentage of slider for visual fill (memoized)
   const sliderPercent = useMemo(() => {
     return ((value - min) / (max - min)) * 100;
@@ -77,6 +82,12 @@ export function ContributionInput({
         <div className="text-right">
           <div className="text-2xl font-bold text-gray-900">{displayValue}</div>
           <div className="text-xs text-gray-500">
+            {isPercentage && (
+              <>
+                {formatCurrency(perPaycheckAmount, 0)} per paycheck •{' '}
+              </>
+            )}
+            {!isPercentage && 'per paycheck • '}
             {formatCurrency(annualAmount, 0)} per year
           </div>
         </div>

@@ -44,8 +44,8 @@ export function useContributionCalculator(initialData) {
       contributionType,
       contributionAmount,
       user.salary,
-      initialContribution.employerMatchPercent,
-      initialContribution.employerMatchLimit
+      initialContribution.employerMatchRate,
+      initialContribution.employerMatchCap
     );
   }, [contributionType, contributionAmount, user.salary, initialContribution]);
 
@@ -57,8 +57,8 @@ export function useContributionCalculator(initialData) {
       originalContribution.type,
       originalContribution.amount,
       user.salary,
-      initialContribution.employerMatchPercent,
-      initialContribution.employerMatchLimit
+      initialContribution.employerMatchRate,
+      initialContribution.employerMatchCap
     );
   }, [originalContribution, user.salary, initialContribution]);
 
@@ -70,8 +70,8 @@ export function useContributionCalculator(initialData) {
       contributionType,
       contributionAmount,
       user.salary,
-      initialContribution.employerMatchPercent,
-      initialContribution.employerMatchLimit,
+      initialContribution.employerMatchRate,
+      initialContribution.employerMatchCap,
       ytd.monthsElapsed
     );
   }, [contributionType, contributionAmount, user.salary, initialContribution, ytd.monthsElapsed]);
@@ -189,8 +189,8 @@ export function useContributionCalculator(initialData) {
     user,
     limits,
     employerMatch: {
-      percent: initialContribution.employerMatchPercent,
-      limit: initialContribution.employerMatchLimit,
+      rate: initialContribution.employerMatchRate,
+      cap: initialContribution.employerMatchCap,
     },
 
     // Actions

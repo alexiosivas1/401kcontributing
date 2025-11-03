@@ -164,29 +164,6 @@ export const ImpactVisualization = memo(function ImpactVisualization({ impact, h
           <div className="text-xs text-gray-500 mt-1">From compound interest</div>
         </div>
       </div>
-
-      {/* Insight */}
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="text-sm font-medium text-blue-900 mb-2">
-          💡 What This Means
-        </h4>
-        <p className="text-sm text-blue-800">
-          {isIncrease ? (
-            <>
-              By increasing your contribution, you'll have{' '}
-              <strong>{formatCurrency(difference, 0)} more</strong> in retirement.
-              That's the power of compound interest over{' '}
-              {newProjection.yearsToRetirement} years!
-            </>
-          ) : (
-            <>
-              Reducing your contribution means{' '}
-              <strong>{formatCurrency(Math.abs(difference), 0)} less</strong> in
-              retirement. Consider if this aligns with your long-term goals.
-            </>
-          )}
-        </p>
-      </div>
     </div>
   );
 });
