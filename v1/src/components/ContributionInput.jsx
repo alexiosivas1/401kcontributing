@@ -83,9 +83,9 @@ export function ContributionInput({
           step={step}
           value={value}
           onChange={(e) => handleSliderChange(Number(e.target.value))}
-          className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+          className="w-full h-3 rounded-lg appearance-none cursor-pointer slider slider-gradient"
           style={{
-            background: `linear-gradient(to right, #0ea5e9 0%, #0ea5e9 ${sliderPercent}%, #e5e7eb ${sliderPercent}%, #e5e7eb 100%)`,
+            '--slider-percent': `${sliderPercent}%`,
           }}
           aria-label={`Contribution amount slider`}
           aria-valuemin={min}
