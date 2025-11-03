@@ -45,6 +45,60 @@
   .btn-secondary {
     @apply px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors;
   }
+
+  /* Editable field inline editing styles */
+  .editable-field {
+    @apply relative inline-flex items-center gap-1 cursor-pointer rounded px-2 py-1 -mx-2 -my-1;
+    transition: background-color 0.2s ease;
+    /* GPU acceleration for smooth hover transitions */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .editable-field:hover {
+    @apply bg-gray-100;
+  }
+
+  .editable-field:focus {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+
+  .editable-field-value {
+    @apply inline;
+  }
+
+  .edit-icon {
+    @apply inline-block text-gray-400 flex-shrink-0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .editable-field:hover .edit-icon {
+    opacity: 1;
+  }
+
+  .editable-field-input {
+    @apply inline-block px-2 py-1 border-2 border-primary-500 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    min-width: 60px;
+    /* GPU acceleration for smooth focus transitions */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Mobile optimizations for editable fields */
+  @media (max-width: 768px) {
+    .edit-icon {
+      /* Always show edit icon on touch devices */
+      opacity: 0.5;
+    }
+
+    .editable-field {
+      /* Larger touch target */
+      min-height: 44px;
+      @apply flex items-center;
+    }
+  }
 }
 
 /* Smooth transitions and performance optimizations */

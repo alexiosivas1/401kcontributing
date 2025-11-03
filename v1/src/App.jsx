@@ -4,7 +4,7 @@ import { ContributionTypeToggle } from './components/ContributionTypeToggle';
 import { ContributionInput } from './components/ContributionInput';
 import { YTDSummary } from './components/YTDSummary';
 import { RetirementProjection } from './components/RetirementProjection';
-import { ImpactVisualization } from './components/ImpactVisualization';
+import { EditableValue } from './components/EditableValue';
 import mockUserData from './utils/mockData';
 
 /**
@@ -30,14 +30,18 @@ function App() {
     contributionAmount,
     hasChanges,
     annualContributions,
+    originalAnnualContributions,
     ytdContributions,
     retirementProjection,
-    contributionImpact,
     validation,
     user,
     employerMatch,
     handleTypeChange,
     handleAmountChange,
+    handleAgeChange,
+    handleSalaryChange,
+    handleEmployerMatchRateChange,
+    handleEmployerMatchCapChange,
     reset,
     getMaxAmount,
   } = calculator;
@@ -87,29 +91,82 @@ function App() {
             <div className="h-4 w-px bg-gray-300" />
             <div>
               <span className="text-gray-600">Age:</span>{' '}
-              <span className="font-medium text-gray-900">{user.age}</span>
+              <span className="font-medium text-gray-900">
+                <EditableValue
+                  value={user.age}
+                  onChange={handleAgeChange}
+                  formatter={(val) => val}
+                  validation={{
+                    min: 18,
+                    max: 100,
+                    type: 'number',
+                    formatter: (val) => Math.round(val),
+                  }}
+                  inputType="number"
+                  label="Age"
+                />
+              </span>
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div>
               <span className="text-gray-600">Annual Salary:</span>{' '}
               <span className="font-medium text-gray-900">
-                ${user.salary.toLocaleString()}
+                <EditableValue
+                  value={user.salary}
+                  onChange={handleSalaryChange}
+                  formatter={(val) => `$${val.toLocaleString()}`}
+                  validation={{
+                    min: 1,
+                    max: 1000000,
+                    type: 'number',
+                    formatter: (val) => Math.round(val),
+                  }}
+                  inputType="number"
+                  label="Annual Salary"
+                />
               </span>
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div>
               <span className="text-gray-600">Employer Match:</span>{' '}
               <span className="font-medium text-green-700">
-                {employerMatch.rate * 100}% up to ${(employerMatch.cap / 100 * user.salary).toLocaleString()} ({employerMatch.cap}% of your annual salary)
+                <EditableValue
+                  value={employerMatch.rate}
+                  onChange={handleEmployerMatchRateChange}
+                  formatter={(val) => `${val * 100}%`}
+                  validation={{
+                    min: 0,
+                    max: 2.0,
+                    type: 'decimal',
+                    formatter: (val) => parseFloat(val.toFixed(2)),
+                  }}
+                  inputType="number"
+                  label="Employer Match Rate"
+                />
+                {' '}up to ${(employerMatch.cap / 100 * user.salary).toLocaleString()} (
+                <EditableValue
+                  value={employerMatch.cap}
+                  onChange={handleEmployerMatchCapChange}
+                  formatter={(val) => `${val}%`}
+                  validation={{
+                    min: 0,
+                    max: 100,
+                    type: 'decimal',
+                    formatter: (val) => parseFloat(val.toFixed(1)),
+                  }}
+                  inputType="number"
+                  label="Employer Match Cap"
+                />
+                {' '}of your annual salary)
               </span>
             </div>
           </div>
         </div>
 
         {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column: Controls */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="space-y-6">
             {/* Contribution Controls Card */}
             <div className="card">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -174,8 +231,8 @@ function App() {
             </div>
           </div>
 
-          {/* Middle Column: YTD Summary */}
-          <div className="lg:col-span-1">
+          {/* Right Column: YTD Summary */}
+          <div>
             <div className="card h-full">
               <YTDSummary
                 ytdContributions={ytdContributions}
@@ -185,31 +242,23 @@ function App() {
               />
             </div>
           </div>
-
-          {/* Right Column: Retirement Projection */}
-          <div className="lg:col-span-1">
-            <div className="card h-full">
-              <RetirementProjection
-                projection={retirementProjection}
-                user={user}
-                hasChanges={hasChanges}
-              />
-            </div>
-          </div>
         </div>
 
-        {/* Impact Visualization (Full Width) */}
-        {hasChanges && (
-          <div className="mt-6">
-            <div className="card">
-              <ImpactVisualization
-                impact={contributionImpact}
-                hasChanges={hasChanges}
-                annualContributions={annualContributions}
-              />
-            </div>
+        {/* Retirement Projection with Graph (Full Width) */}
+        <div className="mt-6">
+          <div className="card">
+            <RetirementProjection
+              projection={retirementProjection}
+              user={user}
+              hasChanges={hasChanges}
+              annualContributions={annualContributions}
+              originalAnnualContributions={originalAnnualContributions}
+              monthsElapsed={mockUserData.ytd.monthsElapsed}
+              annualReturnRate={mockUserData.assumptions.averageAnnualReturn}
+              ytdData={mockUserData.ytd}
+            />
           </div>
-        )}
+        </div>
 
         {/* Footer Info */}
         <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
