@@ -3,8 +3,23 @@
 @tailwind utilities;
 
 @layer base {
+  /* Enable smooth scrolling and GPU acceleration */
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-gray-50 text-gray-900;
+    /* Enable GPU acceleration for smoother scrolling */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Optimize rendering for fixed/sticky elements */
+  header {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 }
 
@@ -12,6 +27,9 @@
   /* Custom component styles will go here */
   .card {
     @apply bg-white rounded-lg shadow-md p-6;
+    /* Optimize card rendering for better scroll performance */
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   .input-field {
@@ -27,9 +45,22 @@
   }
 }
 
-/* Smooth transitions for number changes */
+/* Smooth transitions and performance optimizations */
 @layer utilities {
   .number-transition {
     transition: all 0.3s ease-in-out;
+  }
+
+  /* GPU acceleration helper */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  /* Smooth scroll container */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 }
