@@ -100,10 +100,12 @@ export const RetirementProjection = memo(function RetirementProjection({
       employerMatch.rate,
       employerMatch.cap,
       user.salary,
-      annualReturnRate
+      annualReturnRate,
+      annualContributions.employee,
+      annualContributions.employer
     );
     return downsampleYearlyData(data, 50);
-  }, [user, limits, employerMatch, annualReturnRate]);
+  }, [user, limits, employerMatch, annualReturnRate, annualContributions]);
 
   return (
     <ContributionGraph

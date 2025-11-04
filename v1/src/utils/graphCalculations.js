@@ -168,6 +168,7 @@ export function generateYearlyProjection(
 /**
  * Generate max catch-up contribution projection
  * Shows what balance would be if user maxed out contributions from age 50
+ * Uses CURRENT contributions before age 50, then MAX contributions at 50+
  * OPTIMIZED: Minimal code, reuses generateYearlyProjection logic
  *
  * @param {number} currentBalance - Current 401(k) balance
@@ -180,6 +181,8 @@ export function generateYearlyProjection(
  * @param {number} employerMatchCap - Employer match cap as % of salary (e.g., 6)
  * @param {number} salary - Annual salary for employer match calculation
  * @param {number} annualReturnRate - Expected annual return rate (default: 0.07)
+ * @param {number} currentEmployeeContribution - User's current annual employee contribution
+ * @param {number} currentEmployerContribution - User's current annual employer match
  * @returns {Array} Data points with catchupBalance for each year
  */
 export function generateMaxCatchupProjection(
@@ -192,7 +195,9 @@ export function generateMaxCatchupProjection(
   employerMatchRate,
   employerMatchCap,
   salary,
-  annualReturnRate = 0.07
+  annualReturnRate = 0.07,
+  currentEmployeeContribution,
+  currentEmployerContribution
 ) {
   const yearsToRetirement = retirementAge - currentAge;
   const data = [];
@@ -205,19 +210,28 @@ export function generateMaxCatchupProjection(
     catchupBalance: currentAge >= catchupAge ? Math.round(balance) : null,
   });
 
-  // Project forward year by year with max contributions from age 50
+  // Project forward year by year
+  // Before age 50: Use current contributions (match regular projection)
+  // At age 50+: Use max contributions (show catch-up benefit)
   for (let year = 1; year <= yearsToRetirement; year++) {
     const age = currentAge + year;
 
-    // Max employee contribution (with catch-up if age >= 50)
-    const maxEmployee = age >= catchupAge ? annualLimit + catchupLimit : annualLimit;
+    let employeeContribution, employerContribution;
 
-    // Employer match (capped)
-    const matchableAmount = Math.min(maxEmployee, salary * (employerMatchCap / 100));
-    const maxEmployer = matchableAmount * employerMatchRate;
+    if (age >= catchupAge) {
+      // At age 50+: Use max contributions with catch-up
+      const maxEmployee = annualLimit + catchupLimit;
+      const matchableAmount = Math.min(maxEmployee, salary * (employerMatchCap / 100));
+      employeeContribution = maxEmployee;
+      employerContribution = matchableAmount * employerMatchRate;
+    } else {
+      // Before age 50: Use current contributions (so balance matches regular projection)
+      employeeContribution = currentEmployeeContribution;
+      employerContribution = currentEmployerContribution;
+    }
 
     // Apply growth and contributions
-    balance = balance * (1 + annualReturnRate) + maxEmployee + maxEmployer;
+    balance = balance * (1 + annualReturnRate) + employeeContribution + employerContribution;
 
     data.push({
       year,

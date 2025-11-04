@@ -307,7 +307,7 @@ export const ContributionGraph = memo(function ContributionGraph({
             />
 
             {/* Max Catch-up Scenario line (purple dashed) */}
-            {chartData[0]?.catchupBalance && (
+            {chartData.some(d => d.catchupBalance !== null) && (
               <Line
                 type="monotone"
                 dataKey="catchupBalance"
