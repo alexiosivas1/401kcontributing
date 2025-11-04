@@ -39,6 +39,7 @@ export const ContributionGraph = memo(function ContributionGraph({
   hasChanges,
   annualContributions, // For calculating per-period amounts
   annualReturnRate = 0.07, // Assumed market return rate
+  limits, // IRS contribution limits for dynamic tooltip values
 }) {
   const [viewMode, setViewMode] = useState('yearly'); // 'monthly' or 'yearly'
 
@@ -166,7 +167,7 @@ export const ContributionGraph = memo(function ContributionGraph({
               💰 Max Catch-up Scenario
             </div>
             <div className="text-[10px] text-gray-600 mb-2">
-              Maxing out contributions ($30.5k/year) from age 50
+              Maxing out contributions (${limits ? ((limits.annual + limits.catchUp) / 1000).toFixed(1) : '30.5'}k/year) from age {limits?.maxAge || 50}
             </div>
             <div className="flex justify-between text-xs mb-0.5">
               <span className="text-purple-600">Projected balance:</span>
@@ -253,7 +254,11 @@ export const ContributionGraph = memo(function ContributionGraph({
               }}
               label={{ value: 'Balance ($)', angle: -90, position: 'insideLeft' }}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip
+              content={<CustomTooltip />}
+              wrapperStyle={{ zIndex: 1000 }}
+              cursor={{ stroke: '#8b5cf6', strokeWidth: 1, strokeDasharray: '3 3' }}
+            />
             <Legend
               wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
               iconType="line"

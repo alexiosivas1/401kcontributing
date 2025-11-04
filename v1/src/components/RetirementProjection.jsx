@@ -116,6 +116,7 @@ export const RetirementProjection = memo(function RetirementProjection({
       hasChanges={hasChanges}
       annualContributions={annualContributions}
       annualReturnRate={annualReturnRate}
+      limits={limits}
     />
   );
 });
