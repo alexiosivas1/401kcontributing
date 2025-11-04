@@ -84,18 +84,15 @@ export function useContributionCalculator(initialData) {
   }, [originalValues]);
 
   /**
-   * Calculate year-to-date contributions
+   * Year-to-date contributions (actual historical data - doesn't change with slider)
    */
   const ytdContributions = useMemo(() => {
-    return calculateYTDContributions(
-      contributionType,
-      contributionAmount,
-      salary,
-      employerMatchRate,
-      employerMatchCap,
-      ytd.monthsElapsed
-    );
-  }, [contributionType, contributionAmount, salary, employerMatchRate, employerMatchCap, ytd.monthsElapsed]);
+    return {
+      employee: ytd.employeeContributed,
+      employer: ytd.employerMatched,
+      total: ytd.totalContributed,
+    };
+  }, [ytd]);
 
   /**
    * Validate current contribution against IRS limits
@@ -257,6 +254,7 @@ export function useContributionCalculator(initialData) {
       rate: employerMatchRate,
       cap: employerMatchCap,
     },
+    originalValues,
 
     // Actions
     handleTypeChange,

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { formatCurrency, formatPercentage } from '../utils/calculations';
 import { useThrottledCallback } from '../hooks/useThrottledCallback';
 
@@ -18,13 +18,14 @@ import { useThrottledCallback } from '../hooks/useThrottledCallback';
  * - Performance optimized with throttled slider updates (60 FPS)
  * - Memoized computed values to prevent unnecessary recalculations
  */
-export function ContributionInput({
+export const ContributionInput = memo(function ContributionInput({
   type,
   value,
   onChange,
   maxAmount,
   salary,
   validation,
+  originalValue,
 }) {
   const isPercentage = type === 'percentage';
 
@@ -57,6 +58,20 @@ export function ContributionInput({
     return ((value - min) / (max - min)) * 100;
   }, [value, min, max]);
 
+  // Calculate original value position on slider (memoized)
+  const originalPercent = useMemo(() => {
+    if (originalValue === undefined) return null;
+    return ((originalValue - min) / (max - min)) * 100;
+  }, [originalValue, min, max]);
+
+  // Format original value for display (memoized)
+  const originalDisplayValue = useMemo(() => {
+    if (originalValue === undefined) return null;
+    return isPercentage
+      ? formatPercentage(originalValue)
+      : formatCurrency(originalValue, 0);
+  }, [originalValue, isPercentage]);
+
   // Throttle slider updates to 60 FPS using requestAnimationFrame
   // Without this, slider fires 200-300 updates/second causing jank
   const handleSliderChange = useThrottledCallback((value) => {
@@ -81,14 +96,14 @@ export function ContributionInput({
         </label>
         <div className="text-right">
           <div className="text-2xl font-bold text-gray-900">{displayValue}</div>
-          <div className="text-xs text-gray-500">
-            {isPercentage && (
-              <>
-                {formatCurrency(perPaycheckAmount, 0)} per paycheck •{' '}
-              </>
-            )}
-            {!isPercentage && 'per paycheck • '}
-            {formatCurrency(annualAmount, 0)} per year
+          <div className="text-xs text-gray-500 space-y-0.5">
+            <div>
+              {isPercentage && formatCurrency(perPaycheckAmount, 0)}
+              {!isPercentage && displayValue} per paycheck
+            </div>
+            <div>
+              {formatCurrency(annualAmount, 0)} per year
+            </div>
           </div>
         </div>
       </div>
@@ -112,6 +127,22 @@ export function ContributionInput({
           aria-valuenow={value}
           aria-valuetext={displayValue}
         />
+
+        {/* Original value marker - dashed circle at initial position */}
+        {originalPercent !== null && value !== originalValue && (
+          <div
+            className="absolute top-0 -translate-x-1/2 pointer-events-none"
+            style={{ left: `calc(${originalPercent}% + 0.5%)` }}
+          >
+            {/* Dashed circle marker at original position */}
+            <div className="w-5 h-5 rounded-full border-2 border-dashed border-blue-500 bg-white mt-0.5" />
+            {/* Label showing original value */}
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs text-blue-600 font-medium whitespace-nowrap">
+              {originalDisplayValue}
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>{isPercentage ? '0%' : '$0'}</span>
           <span>
@@ -201,6 +232,6 @@ export function ContributionInput({
       )}
     </div>
   );
-}
+});
 
 export default ContributionInput;

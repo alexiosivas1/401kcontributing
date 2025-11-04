@@ -1,11 +1,16 @@
+import { useMemo } from 'react';
 import { Settings, RotateCcw } from 'lucide-react';
 import { useContributionCalculator } from './hooks/useContributionCalculator';
 import { ContributionTypeToggle } from './components/ContributionTypeToggle';
 import { ContributionInput } from './components/ContributionInput';
 import { YTDSummary } from './components/YTDSummary';
+import { ProjectedYearEndContributions } from './components/ProjectedYearEndContributions';
 import { RetirementProjection } from './components/RetirementProjection';
+import { BalanceBreakdown } from './components/BalanceBreakdown';
+import { ProjectedBalance } from './components/ProjectedBalance';
 import { EditableValue } from './components/EditableValue';
 import mockUserData from './utils/mockData';
+import { generateMonthlyProjection } from './utils/graphCalculations';
 
 /**
  * Main App Component
@@ -36,6 +41,7 @@ function App() {
     validation,
     user,
     employerMatch,
+    originalValues,
     handleTypeChange,
     handleAmountChange,
     handleAgeChange,
@@ -46,6 +52,38 @@ function App() {
     getMaxAmount,
   } = calculator;
 
+  // Convert original value to current contribution type scale
+  const convertedOriginalValue = useMemo(() => {
+    if (originalValues.type === contributionType) {
+      return originalValues.amount;
+    }
+
+    // Convert between percentage and fixed
+    if (originalValues.type === 'percentage' && contributionType === 'fixed') {
+      // Convert percentage to per-paycheck dollar amount
+      return (user.salary * originalValues.amount / 100) / 26;
+    } else if (originalValues.type === 'fixed' && contributionType === 'percentage') {
+      // Convert per-paycheck dollar amount to percentage
+      const annualAmount = originalValues.amount * 26;
+      return (annualAmount / user.salary) * 100;
+    }
+
+    return originalValues.amount;
+  }, [originalValues.type, originalValues.amount, contributionType, user.salary]);
+
+  // Generate monthly projection data for tooltips
+  const monthlyData = useMemo(() => {
+    return generateMonthlyProjection(
+      user.currentBalance,
+      annualContributions.employee,
+      annualContributions.employer,
+      mockUserData.ytd.monthsElapsed,
+      mockUserData.assumptions.averageAnnualReturn,
+      12,
+      mockUserData.ytd
+    );
+  }, [user.currentBalance, annualContributions]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -53,7 +91,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Settings className="text-white" size={24} />
               </div>
               <div>
@@ -163,92 +201,59 @@ function App() {
           </div>
         </div>
 
-        {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column: Controls */}
-          <div className="space-y-6">
-            {/* Contribution Controls Card */}
-            <div className="card">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Contribution Settings
-              </h2>
+        {/* Row 1: Three equal-height cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Contribution Settings Card */}
+          <div className="card">
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
+              Contribution Settings
+            </h2>
 
-              <div className="space-y-6">
-                {/* Type Toggle */}
-                <ContributionTypeToggle
-                  value={contributionType}
-                  onChange={handleTypeChange}
-                />
+            <div className="space-y-4">
+              {/* Type Toggle */}
+              <ContributionTypeToggle
+                value={contributionType}
+                onChange={handleTypeChange}
+              />
 
-                {/* Amount Input */}
-                <ContributionInput
-                  type={contributionType}
-                  value={contributionAmount}
-                  onChange={handleAmountChange}
-                  maxAmount={getMaxAmount()}
-                  salary={user.salary}
-                  validation={validation}
-                />
-              </div>
-            </div>
-
-            {/* Annual Summary Card */}
-            <div className="card">
-              <h3 className="text-sm font-medium text-gray-900 mb-3">
-                Annual Contributions
-              </h3>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Your contribution:</span>
-                  <span className="font-medium text-gray-900">
-                    ${annualContributions.employee.toLocaleString(undefined, {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    })}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Employer match:</span>
-                  <span className="font-medium text-green-700">
-                    ${annualContributions.employer.toLocaleString(undefined, {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    })}
-                  </span>
-                </div>
-                <div className="pt-2 border-t border-gray-200">
-                  <div className="flex justify-between text-sm font-semibold">
-                    <span className="text-gray-900">Total annual:</span>
-                    <span className="text-primary-700">
-                      ${annualContributions.total.toLocaleString(undefined, {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: YTD Summary */}
-          <div>
-            <div className="card h-full">
-              <YTDSummary
-                ytdContributions={ytdContributions}
-                annualContributions={annualContributions}
-                employerMatch={employerMatch}
-                monthsElapsed={mockUserData.ytd.monthsElapsed}
+              {/* Amount Input */}
+              <ContributionInput
+                type={contributionType}
+                value={contributionAmount}
+                onChange={handleAmountChange}
+                maxAmount={getMaxAmount()}
+                salary={user.salary}
+                validation={validation}
+                originalValue={convertedOriginalValue}
               />
             </div>
           </div>
+
+          {/* YTD Summary Card */}
+          <div className="card">
+            <YTDSummary
+              ytdContributions={ytdContributions}
+              annualContributions={annualContributions}
+              employerMatch={employerMatch}
+              monthsElapsed={mockUserData.ytd.monthsElapsed}
+              monthlyData={monthlyData}
+            />
+          </div>
+
+          {/* Projected Year-End Contributions Card */}
+          <div className="card">
+            <ProjectedYearEndContributions
+              ytdContributions={ytdContributions}
+              annualContributions={annualContributions}
+              monthsElapsed={mockUserData.ytd.monthsElapsed}
+            />
+          </div>
         </div>
 
-        {/* Retirement Projection with Graph (Full Width) */}
+        {/* Row 2: Graph (50vh height to fit in viewport) */}
         <div className="mt-6">
-          <div className="card">
+          <div className="card h-[50vh]">
             <RetirementProjection
-              projection={retirementProjection}
               user={user}
               hasChanges={hasChanges}
               annualContributions={annualContributions}
@@ -256,6 +261,27 @@ function App() {
               monthsElapsed={mockUserData.ytd.monthsElapsed}
               annualReturnRate={mockUserData.assumptions.averageAnnualReturn}
               ytdData={mockUserData.ytd}
+            />
+          </div>
+        </div>
+
+        {/* Row 3: Balance Breakdown and Projected Balance */}
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Balance Breakdown */}
+          <div className="card">
+            <BalanceBreakdown
+              projection={retirementProjection}
+              user={user}
+            />
+          </div>
+
+          {/* Projected Retirement Balance */}
+          <div className="card">
+            <ProjectedBalance
+              projection={retirementProjection}
+              user={user}
+              hasChanges={hasChanges}
+              contributionImpact={calculator.contributionImpact}
             />
           </div>
         </div>

@@ -108,7 +108,7 @@ export const ContributionGraph = memo(function ContributionGraph({
         <div className="mb-3">
           <div className="flex justify-between items-baseline mb-1">
             <span className="text-xs font-medium text-gray-600">Total Balance</span>
-            <span className="text-lg font-bold text-primary-700">{formatCurrency(data.balance, 0)}</span>
+            <span className="text-lg font-bold text-blue-700">{formatCurrency(data.balance, 0)}</span>
           </div>
           <div className="space-y-0.5 text-[11px] text-gray-600 ml-2">
             <div className="flex justify-between">
@@ -117,28 +117,11 @@ export const ContributionGraph = memo(function ContributionGraph({
             </div>
             <div className="flex justify-between">
               <span>• Growth ({growthPercent.toFixed(0)}%)</span>
-              <span className="font-medium text-purple-600">{formatCurrency(data.growth, 0)}</span>
+              <span className="font-medium text-violet-600">{formatCurrency(data.growth, 0)}</span>
             </div>
             <div className="flex justify-between">
               <span>• Starting ({startingPercent.toFixed(0)}%)</span>
               <span className="font-medium">{formatCurrency(data.startingBalance, 0)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* DETAIL: This Period's Contributions - Show for all data (past and future) */}
-        <div className="pt-2 border-t border-gray-200 mb-3">
-          <p className="text-xs font-medium text-gray-700 mb-1">
-            This {viewMode === 'monthly' ? 'Month' : 'Year'}'s Contributions
-          </p>
-          <div className="space-y-0.5 text-[11px] text-gray-600 ml-2">
-            <div className="flex justify-between">
-              <span>• Employee</span>
-              <span className="font-medium">{formatCurrency(periodEmployee, 0)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>• Employer</span>
-              <span className="font-medium">{formatCurrency(periodEmployer, 0)}</span>
             </div>
           </div>
         </div>
@@ -154,7 +137,7 @@ export const ContributionGraph = memo(function ContributionGraph({
         )}
 
         {/* COMPARISON */}
-        {data.originalBalance && hasChanges && (
+        {data.originalBalance && hasChanges && data.isProjected && (
           <div className="pt-2 border-t border-gray-200">
             <div className="flex justify-between text-xs text-gray-600 mb-0.5">
               <span>Original projection</span>
@@ -287,29 +270,11 @@ export const ContributionGraph = memo(function ContributionGraph({
               />
             )}
 
-            {/* Contribution lines */}
-            <Line
-              type="monotone"
-              dataKey="employee"
-              stroke="rgba(99, 102, 241, 0.7)"
-              strokeWidth={2}
-              dot={false}
-              name="Employee"
-              animationDuration={0}
-            />
-            <Line
-              type="monotone"
-              dataKey="employer"
-              stroke="rgba(245, 158, 11, 0.7)"
-              strokeWidth={2}
-              dot={false}
-              name="Employer"
-              animationDuration={0}
-            />
+            {/* Total Balance line */}
             <Line
               type="monotone"
               dataKey="balance"
-              stroke="rgb(14, 165, 233)"
+              stroke="rgba(37, 99, 235, 0.9)"
               strokeWidth={3}
               dot={false}
               name="Total Balance"

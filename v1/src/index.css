@@ -26,12 +26,18 @@
 @layer components {
   /* Custom component styles will go here */
   .card {
-    @apply bg-white rounded-lg shadow-sm p-6;
+    @apply bg-white rounded-lg shadow-sm p-6 overflow-visible relative;
     /* Optimize card rendering for better scroll performance */
     transform: translateZ(0);
     backface-visibility: hidden;
-    /* Tell browser this element's layout/style/paint are independent */
-    contain: layout style paint;
+    /* Tell browser this element's layout/style are independent */
+    /* Removed paint containment to allow tooltips to overflow */
+    contain: layout style;
+  }
+
+  /* Elevate card z-index when it contains content with active tooltip */
+  .card:has(.z-50) {
+    z-index: 50;
   }
 
   .input-field {
@@ -48,7 +54,7 @@
 
   /* Editable field inline editing styles */
   .editable-field {
-    @apply relative inline-flex items-center gap-1 cursor-pointer rounded px-2 py-1 -mx-2 -my-1;
+    @apply relative inline-flex items-center cursor-pointer rounded px-2 py-1 -mx-2 -my-1;
     transition: background-color 0.2s ease;
     /* GPU acceleration for smooth hover transitions */
     transform: translateZ(0);
@@ -68,13 +74,16 @@
   }
 
   .edit-icon {
-    @apply inline-block text-gray-400 flex-shrink-0;
+    @apply inline-block text-gray-400 flex-shrink-0 ml-1;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease, width 0.2s ease;
   }
 
   .editable-field:hover .edit-icon {
     opacity: 1;
+    width: 14px;
   }
 
   .editable-field-input {
@@ -125,10 +134,43 @@
   .slider-gradient {
     background: linear-gradient(
       to right,
-      #0ea5e9 0%,
-      #0ea5e9 var(--slider-percent, 0%),
+      #64748b 0%,
+      #64748b var(--slider-percent, 0%),
       #e5e7eb var(--slider-percent, 0%),
       #e5e7eb 100%
     );
+  }
+
+  /* Solid slider thumb */
+  .slider-gradient::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    border: 2px solid #2563eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .slider-gradient::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    border: 2px solid #2563eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .slider-gradient::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    background: #2563eb;
+  }
+
+  .slider-gradient::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    background: #2563eb;
   }
 }
