@@ -122,6 +122,25 @@
       @apply flex items-center;
     }
   }
+
+  /* Catch-up badge with hover tooltip */
+  .catchup-badge {
+    @apply relative inline-flex items-center ml-2 px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-800 rounded-full cursor-help;
+  }
+
+  .catchup-badge-tooltip {
+    @apply invisible absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 transition-opacity duration-200;
+    z-index: 1000;
+  }
+
+  .catchup-badge-tooltip::after {
+    content: '';
+    @apply absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900;
+  }
+
+  .catchup-badge:hover .catchup-badge-tooltip {
+    @apply visible opacity-100;
+  }
 }
 
 /* Smooth transitions and performance optimizations */

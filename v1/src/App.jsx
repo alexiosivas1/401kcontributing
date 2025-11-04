@@ -145,11 +145,17 @@ function App() {
                 />
               </span>
               {user.age >= mockUserData.limits.maxAge && (
-                <span
-                  className="ml-2 px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-800 rounded-full cursor-help"
-                  title="Catch-up contributions: Extra $7,500/year available (total limit: $30,500) for ages 50+"
-                >
+                <span className="catchup-badge">
                   ✓ Catch-up
+                  <span className="catchup-badge-tooltip">
+                    <div className="font-semibold mb-1">Catch-Up Contributions</div>
+                    <div className="space-y-1 text-[11px]">
+                      <p>At age {mockUserData.limits.maxAge}+, you can contribute an extra <span className="font-semibold text-green-400">${mockUserData.limits.catchUp.toLocaleString()}/year</span> on top of the standard limit.</p>
+                      <p>• Standard limit: ${mockUserData.limits.annual.toLocaleString()}</p>
+                      <p>• With catch-up: <span className="font-semibold text-green-400">${(mockUserData.limits.annual + mockUserData.limits.catchUp).toLocaleString()}</span> total</p>
+                      <p className="text-gray-300 mt-1">This helps you save more as you approach retirement.</p>
+                    </div>
+                  </span>
                 </span>
               )}
             </div>
