@@ -166,6 +166,70 @@ export function generateYearlyProjection(
 }
 
 /**
+ * Generate max catch-up contribution projection
+ * Shows what balance would be if user maxed out contributions from age 50
+ * OPTIMIZED: Minimal code, reuses generateYearlyProjection logic
+ *
+ * @param {number} currentBalance - Current 401(k) balance
+ * @param {number} currentAge - User's current age
+ * @param {number} retirementAge - Target retirement age
+ * @param {number} annualLimit - Standard annual limit ($23,000)
+ * @param {number} catchupLimit - Additional catch-up limit ($7,500)
+ * @param {number} catchupAge - Age when catch-up kicks in (50)
+ * @param {number} employerMatchRate - Employer match rate (e.g., 0.5 for 50%)
+ * @param {number} employerMatchCap - Employer match cap as % of salary (e.g., 6)
+ * @param {number} salary - Annual salary for employer match calculation
+ * @param {number} annualReturnRate - Expected annual return rate (default: 0.07)
+ * @returns {Array} Data points with catchupBalance for each year
+ */
+export function generateMaxCatchupProjection(
+  currentBalance,
+  currentAge,
+  retirementAge,
+  annualLimit,
+  catchupLimit,
+  catchupAge,
+  employerMatchRate,
+  employerMatchCap,
+  salary,
+  annualReturnRate = 0.07
+) {
+  const yearsToRetirement = retirementAge - currentAge;
+  const data = [];
+  let balance = currentBalance;
+
+  // Starting point (year 0)
+  data.push({
+    year: 0,
+    age: currentAge,
+    catchupBalance: Math.round(balance),
+  });
+
+  // Project forward year by year with max contributions from age 50
+  for (let year = 1; year <= yearsToRetirement; year++) {
+    const age = currentAge + year;
+
+    // Max employee contribution (with catch-up if age >= 50)
+    const maxEmployee = age >= catchupAge ? annualLimit + catchupLimit : annualLimit;
+
+    // Employer match (capped)
+    const matchableAmount = Math.min(maxEmployee, salary * (employerMatchCap / 100));
+    const maxEmployer = matchableAmount * employerMatchRate;
+
+    // Apply growth and contributions
+    balance = balance * (1 + annualReturnRate) + maxEmployee + maxEmployer;
+
+    data.push({
+      year,
+      age,
+      catchupBalance: Math.round(balance),
+    });
+  }
+
+  return data;
+}
+
+/**
  * Calculate the difference between two projections for comparison visualization
  *
  * @param {Array} originalData - Original projection data points

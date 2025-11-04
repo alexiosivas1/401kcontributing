@@ -34,6 +34,7 @@ export const ContributionGraph = memo(function ContributionGraph({
   yearlyData,
   originalMonthlyData,
   originalYearlyData,
+  catchupYearlyData,
   monthsElapsed,
   hasChanges,
   annualContributions, // For calculating per-period amounts
@@ -46,16 +47,15 @@ export const ContributionGraph = memo(function ContributionGraph({
     const baseData = viewMode === 'monthly' ? monthlyData : yearlyData;
     const originalData = viewMode === 'monthly' ? originalMonthlyData : originalYearlyData;
 
-    // If we have changes and original data, merge originalBalance into chart data
-    if (hasChanges && originalData) {
-      return baseData.map((point, index) => ({
-        ...point,
-        originalBalance: originalData[index]?.balance || null,
-      }));
-    }
-
-    return baseData;
-  }, [viewMode, monthlyData, yearlyData, originalMonthlyData, originalYearlyData, hasChanges]);
+    // Merge all additional data (original balance for comparison, catch-up projection)
+    return baseData.map((point, index) => ({
+      ...point,
+      // Add originalBalance for comparison if changes exist
+      originalBalance: hasChanges && originalData ? originalData[index]?.balance || null : null,
+      // Add catchupBalance for catch-up projection (only in yearly view)
+      catchupBalance: viewMode === 'yearly' && catchupYearlyData ? catchupYearlyData[index]?.catchupBalance || null : null,
+    }));
+  }, [viewMode, monthlyData, yearlyData, originalMonthlyData, originalYearlyData, catchupYearlyData, hasChanges]);
 
   // Determine x-axis configuration based on view mode
   const xAxisConfig = useMemo(() => {
@@ -155,6 +155,26 @@ export const ContributionGraph = memo(function ContributionGraph({
                 {data.balance > data.originalBalance ? '+' : ''}
                 {formatCurrency(data.balance - data.originalBalance, 0)}
               </span>
+            </div>
+          </div>
+        )}
+
+        {/* CATCH-UP SCENARIO */}
+        {data.catchupBalance && (
+          <div className="pt-2 mt-2 border-t border-purple-200">
+            <div className="text-xs font-semibold text-purple-700 mb-1">
+              💰 Max Catch-up Scenario
+            </div>
+            <div className="text-[10px] text-gray-600 mb-2">
+              Maxing out contributions ($30.5k/year) from age 50
+            </div>
+            <div className="flex justify-between text-xs mb-0.5">
+              <span className="text-purple-600">Projected balance:</span>
+              <span className="font-semibold">{formatCurrency(data.catchupBalance, 0)}</span>
+            </div>
+            <div className="flex justify-between text-xs font-bold text-green-600">
+              <span>Extra savings:</span>
+              <span>+{formatCurrency(data.catchupBalance - data.balance, 0)}</span>
             </div>
           </div>
         )}
@@ -280,6 +300,21 @@ export const ContributionGraph = memo(function ContributionGraph({
               name="Total Balance"
               animationDuration={0}
             />
+
+            {/* Max Catch-up Scenario line (purple dashed) */}
+            {chartData[0]?.catchupBalance && (
+              <Line
+                type="monotone"
+                dataKey="catchupBalance"
+                stroke="#8b5cf6"
+                strokeWidth={2}
+                strokeDasharray="8 4"
+                dot={false}
+                name="Max Catch-up"
+                opacity={0.7}
+                animationDuration={0}
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>

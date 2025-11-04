@@ -26,6 +26,7 @@ export const ContributionInput = memo(function ContributionInput({
   salary,
   validation,
   originalValue,
+  age,
 }) {
   const isPercentage = type === 'percentage';
 
@@ -145,8 +146,16 @@ export const ContributionInput = memo(function ContributionInput({
 
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>{isPercentage ? '0%' : '$0'}</span>
-          <span>
-            {isPercentage ? `${Math.round(max)}%` : formatCurrency(max, 0)}
+          <span className="text-right">
+            <div>
+              {isPercentage ? `${Math.round(max)}%` : formatCurrency(max, 0)}
+            </div>
+            {age >= 50 && (
+              <div className="text-[10px] text-green-600">includes $7.5k catch-up</div>
+            )}
+            {age < 50 && (
+              <div className="text-[10px] text-gray-400">+$7.5k at age 50</div>
+            )}
           </span>
         </div>
       </div>

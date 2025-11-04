@@ -144,6 +144,14 @@ function App() {
                   label="Age"
                 />
               </span>
+              {user.age >= mockUserData.limits.maxAge && (
+                <span
+                  className="ml-2 px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-800 rounded-full cursor-help"
+                  title="Catch-up contributions: Extra $7,500/year available (total limit: $30,500) for ages 50+"
+                >
+                  ✓ Catch-up
+                </span>
+              )}
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div>
@@ -225,6 +233,7 @@ function App() {
                 salary={user.salary}
                 validation={validation}
                 originalValue={convertedOriginalValue}
+                age={user.age}
               />
             </div>
           </div>
@@ -261,6 +270,8 @@ function App() {
               monthsElapsed={mockUserData.ytd.monthsElapsed}
               annualReturnRate={mockUserData.assumptions.averageAnnualReturn}
               ytdData={mockUserData.ytd}
+              employerMatch={employerMatch}
+              limits={mockUserData.limits}
             />
           </div>
         </div>
