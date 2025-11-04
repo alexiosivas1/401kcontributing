@@ -151,10 +151,10 @@ export const ContributionInput = memo(function ContributionInput({
               {isPercentage ? `${Math.round(max)}%` : formatCurrency(max, 0)}
             </div>
             {age >= 50 && (
-              <div className="text-[10px] text-green-600">includes $7.5k catch-up</div>
+              <div className="text-[10px] text-green-600">$7.5k catch-up available (max: {formatCurrency(validation.applicableLimit, 0)})</div>
             )}
             {age < 50 && (
-              <div className="text-[10px] text-gray-400">+$7.5k at age 50</div>
+              <div className="text-[10px] text-gray-400">$7.5k catch-up available at age 50</div>
             )}
           </span>
         </div>
