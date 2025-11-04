@@ -115,6 +115,12 @@ export function generateYearlyProjection(
   const yearsToRetirement = retirementAge - currentAge;
   const data = [];
 
+  // Use monthly compounding for accuracy (matches displayed retirement balance)
+  const monthlyRate = annualReturnRate / 12;
+  const monthlyEmployeeContribution = annualEmployeeContribution / 12;
+  const monthlyEmployerContribution = annualEmployerContribution / 12;
+  const monthlyContribution = monthlyEmployeeContribution + monthlyEmployerContribution;
+
   let balance = currentBalance;
   let cumulativeEmployee = 0;
   let cumulativeEmployer = 0;
@@ -134,15 +140,17 @@ export function generateYearlyProjection(
     isProjected: false,
   });
 
-  // Project forward year by year
+  // Project forward year by year (with monthly compounding)
   for (let year = 1; year <= yearsToRetirement; year++) {
-    // Add this year's contributions
+    // Compound monthly within each year for accuracy
+    for (let month = 1; month <= 12; month++) {
+      // Apply monthly growth, then add monthly contribution
+      balance = balance * (1 + monthlyRate) + monthlyContribution;
+    }
+
+    // Add this year's contributions to cumulative totals
     cumulativeEmployee += annualEmployeeContribution;
     cumulativeEmployer += annualEmployerContribution;
-    const annualContribution = annualEmployeeContribution + annualEmployerContribution;
-
-    // Apply growth: previous balance grows, then add this year's contribution
-    balance = balance * (1 + annualReturnRate) + annualContribution;
 
     // Calculate growth from investments
     const totalContributions = cumulativeEmployee + cumulativeEmployer;
@@ -203,6 +211,9 @@ export function generateMaxCatchupProjection(
   const data = [];
   let balance = currentBalance;
 
+  // Use monthly compounding for accuracy (matches main projection)
+  const monthlyRate = annualReturnRate / 12;
+
   // Starting point (year 0)
   data.push({
     year: 0,
@@ -210,28 +221,32 @@ export function generateMaxCatchupProjection(
     catchupBalance: currentAge >= catchupAge ? Math.round(balance) : null,
   });
 
-  // Project forward year by year
+  // Project forward year by year (with monthly compounding)
   // Before age 50: Use current contributions (match regular projection)
   // At age 50+: Use max contributions (show catch-up benefit)
   for (let year = 1; year <= yearsToRetirement; year++) {
     const age = currentAge + year;
 
-    let employeeContribution, employerContribution;
+    let annualEmployeeContribution, annualEmployerContribution;
 
     if (age >= catchupAge) {
       // At age 50+: Use max contributions with catch-up
       const maxEmployee = annualLimit + catchupLimit;
       const matchableAmount = Math.min(maxEmployee, salary * (employerMatchCap / 100));
-      employeeContribution = maxEmployee;
-      employerContribution = matchableAmount * employerMatchRate;
+      annualEmployeeContribution = maxEmployee;
+      annualEmployerContribution = matchableAmount * employerMatchRate;
     } else {
       // Before age 50: Use current contributions (so balance matches regular projection)
-      employeeContribution = currentEmployeeContribution;
-      employerContribution = currentEmployerContribution;
+      annualEmployeeContribution = currentEmployeeContribution;
+      annualEmployerContribution = currentEmployerContribution;
     }
 
-    // Apply growth and contributions
-    balance = balance * (1 + annualReturnRate) + employeeContribution + employerContribution;
+    // Compound monthly within each year for accuracy
+    const monthlyContribution = (annualEmployeeContribution + annualEmployerContribution) / 12;
+    for (let month = 1; month <= 12; month++) {
+      // Apply monthly growth, then add monthly contribution
+      balance = balance * (1 + monthlyRate) + monthlyContribution;
+    }
 
     data.push({
       year,
