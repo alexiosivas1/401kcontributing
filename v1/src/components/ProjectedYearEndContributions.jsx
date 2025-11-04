@@ -55,7 +55,7 @@ export const ProjectedYearEndContributions = memo(function ProjectedYearEndContr
       {/* Breakdown */}
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Employee:</span>
+          <span className="text-gray-600">Employee (you):</span>
           <span className="font-medium text-gray-900">
             {formatCurrency(projected.employee, 0)}
           </span>

@@ -182,7 +182,7 @@ export const ContributionGraph = memo(function ContributionGraph({
               </div>
             </div>
 
-            <div className="flex justify-between text-xs font-bold text-green-600 pt-1 border-t border-gray-200">
+            <div className="flex justify-between text-xs font-bold text-green-600 pt-1">
               <span>Potential benefit:</span>
               <span>+{formatCurrency(data.catchupBalance - data.balance, 0)}</span>
             </div>
