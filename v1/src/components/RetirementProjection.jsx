@@ -6,6 +6,7 @@ import {
   generateMaxCatchupProjection,
 } from '../utils/graphCalculations';
 import { ContributionGraph } from './ContributionGraph';
+import { EditableValue } from './EditableValue';
 
 /**
  * RetirementProjection Component
@@ -24,6 +25,7 @@ export const RetirementProjection = memo(function RetirementProjection({
   originalAnnualContributions,
   monthsElapsed,
   annualReturnRate = 0.07,
+  onAnnualReturnRateChange,
   ytdData,
   employerMatch,
   limits,
@@ -108,18 +110,46 @@ export const RetirementProjection = memo(function RetirementProjection({
   }, [user, limits, employerMatch, annualReturnRate, annualContributions]);
 
   return (
-    <ContributionGraph
-      monthlyData={monthlyData}
-      yearlyData={yearlyData}
-      originalMonthlyData={originalMonthlyData}
-      originalYearlyData={originalYearlyData}
-      catchupYearlyData={catchupYearlyData}
-      monthsElapsed={monthsElapsed}
-      hasChanges={hasChanges}
-      annualContributions={annualContributions}
-      annualReturnRate={annualReturnRate}
-      limits={limits}
-    />
+    <div className="h-full flex flex-col">
+      {/* Header with Annual Return Rate control */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-gray-900">Retirement Projection</h2>
+        <div className="text-sm text-gray-600">
+          <span>Assumed Annual Return: </span>
+          <span className="font-medium text-gray-900">
+            <EditableValue
+              value={annualReturnRate}
+              onChange={onAnnualReturnRateChange}
+              formatter={(val) => `${(val * 100).toFixed(1)}%`}
+              validation={{
+                min: 0,
+                max: 0.20,
+                type: 'decimal',
+                formatter: (val) => parseFloat(val.toFixed(4)),
+              }}
+              inputType="number"
+              label="Annual Return Rate"
+            />
+          </span>
+        </div>
+      </div>
+
+      {/* Graph */}
+      <div className="flex-1 min-h-0">
+        <ContributionGraph
+          monthlyData={monthlyData}
+          yearlyData={yearlyData}
+          originalMonthlyData={originalMonthlyData}
+          originalYearlyData={originalYearlyData}
+          catchupYearlyData={catchupYearlyData}
+          monthsElapsed={monthsElapsed}
+          hasChanges={hasChanges}
+          annualContributions={annualContributions}
+          annualReturnRate={annualReturnRate}
+          limits={limits}
+        />
+      </div>
+    </div>
   );
 });
 

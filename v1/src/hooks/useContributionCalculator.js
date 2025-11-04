@@ -38,6 +38,7 @@ export function useContributionCalculator(initialData) {
   const [salary, setSalary] = useState(initialUser.salary);
   const [employerMatchRate, setEmployerMatchRate] = useState(initialContribution.employerMatchRate);
   const [employerMatchCap, setEmployerMatchCap] = useState(initialContribution.employerMatchCap);
+  const [annualReturnRate, setAnnualReturnRate] = useState(assumptions.averageAnnualReturn);
 
   // Store original values for reset and comparison
   const [originalValues] = useState({
@@ -47,6 +48,7 @@ export function useContributionCalculator(initialData) {
     salary: initialUser.salary,
     employerMatchRate: initialContribution.employerMatchRate,
     employerMatchCap: initialContribution.employerMatchCap,
+    annualReturnRate: assumptions.averageAnnualReturn,
   });
 
   // Create user object with current values (memoized)
@@ -110,9 +112,9 @@ export function useContributionCalculator(initialData) {
       annualContributions.total,
       user.age,
       user.retirementAge,
-      assumptions.averageAnnualReturn
+      annualReturnRate
     );
-  }, [user, annualContributions.total, assumptions.averageAnnualReturn]);
+  }, [user, annualContributions.total, annualReturnRate]);
 
   /**
    * Calculate impact of contribution changes
@@ -124,9 +126,9 @@ export function useContributionCalculator(initialData) {
       annualContributions.total,
       user.age,
       user.retirementAge,
-      assumptions.averageAnnualReturn
+      annualReturnRate
     );
-  }, [user, originalAnnualContributions.total, annualContributions.total, assumptions.averageAnnualReturn]);
+  }, [user, originalAnnualContributions.total, annualContributions.total, annualReturnRate]);
 
   /**
    * Check if any settings have changed from original
@@ -139,9 +141,10 @@ export function useContributionCalculator(initialData) {
       age !== originalValues.age ||
       salary !== originalValues.salary ||
       employerMatchRate !== originalValues.employerMatchRate ||
-      employerMatchCap !== originalValues.employerMatchCap
+      employerMatchCap !== originalValues.employerMatchCap ||
+      annualReturnRate !== originalValues.annualReturnRate
     );
-  }, [contributionType, contributionAmount, age, salary, employerMatchRate, employerMatchCap, originalValues]);
+  }, [contributionType, contributionAmount, age, salary, employerMatchRate, employerMatchCap, annualReturnRate, originalValues]);
 
   /**
    * Update contribution type and convert amount if needed
@@ -210,6 +213,14 @@ export function useContributionCalculator(initialData) {
   }, []);
 
   /**
+   * Update annual return rate with validation
+   * Optimized with useCallback
+   */
+  const handleAnnualReturnRateChange = useCallback((newRate) => {
+    setAnnualReturnRate(newRate);
+  }, []);
+
+  /**
    * Reset all settings to original values
    */
   const reset = useCallback(() => {
@@ -219,6 +230,7 @@ export function useContributionCalculator(initialData) {
     setSalary(originalValues.salary);
     setEmployerMatchRate(originalValues.employerMatchRate);
     setEmployerMatchCap(originalValues.employerMatchCap);
+    setAnnualReturnRate(originalValues.annualReturnRate);
   }, [originalValues]);
 
   /**
@@ -238,6 +250,7 @@ export function useContributionCalculator(initialData) {
     contributionType,
     contributionAmount,
     hasChanges,
+    annualReturnRate,
 
     // Calculations
     annualContributions,
@@ -263,6 +276,7 @@ export function useContributionCalculator(initialData) {
     handleSalaryChange,
     handleEmployerMatchRateChange,
     handleEmployerMatchCapChange,
+    handleAnnualReturnRateChange,
     reset,
     getMaxAmount,
   };

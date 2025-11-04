@@ -34,6 +34,7 @@ function App() {
     contributionType,
     contributionAmount,
     hasChanges,
+    annualReturnRate,
     annualContributions,
     originalAnnualContributions,
     ytdContributions,
@@ -48,6 +49,7 @@ function App() {
     handleSalaryChange,
     handleEmployerMatchRateChange,
     handleEmployerMatchCapChange,
+    handleAnnualReturnRateChange,
     reset,
     getMaxAmount,
   } = calculator;
@@ -78,11 +80,11 @@ function App() {
       annualContributions.employee,
       annualContributions.employer,
       mockUserData.ytd.monthsElapsed,
-      mockUserData.assumptions.averageAnnualReturn,
+      annualReturnRate,
       12,
       mockUserData.ytd
     );
-  }, [user.currentBalance, annualContributions]);
+  }, [user.currentBalance, annualContributions, annualReturnRate]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -274,7 +276,8 @@ function App() {
               annualContributions={annualContributions}
               originalAnnualContributions={originalAnnualContributions}
               monthsElapsed={mockUserData.ytd.monthsElapsed}
-              annualReturnRate={mockUserData.assumptions.averageAnnualReturn}
+              annualReturnRate={annualReturnRate}
+              onAnnualReturnRateChange={handleAnnualReturnRateChange}
               ytdData={mockUserData.ytd}
               employerMatch={employerMatch}
               limits={mockUserData.limits}
