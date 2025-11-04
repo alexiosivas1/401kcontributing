@@ -42,7 +42,8 @@ function App() {
     validation,
     user,
     employerMatch,
-    originalValues,
+    originalContributionValues,
+    baselineValues,
     handleTypeChange,
     handleAmountChange,
     handleAgeChange,
@@ -56,22 +57,22 @@ function App() {
 
   // Convert original value to current contribution type scale
   const convertedOriginalValue = useMemo(() => {
-    if (originalValues.type === contributionType) {
-      return originalValues.amount;
+    if (originalContributionValues.type === contributionType) {
+      return originalContributionValues.amount;
     }
 
     // Convert between percentage and fixed
-    if (originalValues.type === 'percentage' && contributionType === 'fixed') {
+    if (originalContributionValues.type === 'percentage' && contributionType === 'fixed') {
       // Convert percentage to per-paycheck dollar amount
-      return (user.salary * originalValues.amount / 100) / 26;
-    } else if (originalValues.type === 'fixed' && contributionType === 'percentage') {
+      return (user.salary * originalContributionValues.amount / 100) / 26;
+    } else if (originalContributionValues.type === 'fixed' && contributionType === 'percentage') {
       // Convert per-paycheck dollar amount to percentage
-      const annualAmount = originalValues.amount * 26;
+      const annualAmount = originalContributionValues.amount * 26;
       return (annualAmount / user.salary) * 100;
     }
 
-    return originalValues.amount;
-  }, [originalValues.type, originalValues.amount, contributionType, user.salary]);
+    return originalContributionValues.amount;
+  }, [originalContributionValues.type, originalContributionValues.amount, contributionType, user.salary]);
 
   // Generate monthly projection data for tooltips
   const monthlyData = useMemo(() => {

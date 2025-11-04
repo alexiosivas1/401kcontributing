@@ -40,16 +40,27 @@ export function useContributionCalculator(initialData) {
   const [employerMatchCap, setEmployerMatchCap] = useState(initialContribution.employerMatchCap);
   const [annualReturnRate, setAnnualReturnRate] = useState(assumptions.averageAnnualReturn);
 
-  // Store original values for reset and comparison
-  const [originalValues] = useState({
+  // Store original contribution values for comparison (fixed)
+  const [originalContributionValues] = useState({
     type: initialContribution.type,
     amount: initialContribution.amount,
-    age: initialUser.age,
+  });
+
+  // Store baseline values (salary, match) - updates dynamically, no comparison
+  const [baselineValues, setBaselineValues] = useState({
     salary: initialUser.salary,
     employerMatchRate: initialContribution.employerMatchRate,
     employerMatchCap: initialContribution.employerMatchCap,
-    annualReturnRate: assumptions.averageAnnualReturn,
   });
+
+  // Update baseline values when salary or employer match changes
+  useEffect(() => {
+    setBaselineValues({
+      salary,
+      employerMatchRate,
+      employerMatchCap,
+    });
+  }, [salary, employerMatchRate, employerMatchCap]);
 
   // Create user object with current values (memoized)
   const user = useMemo(() => ({
@@ -74,16 +85,17 @@ export function useContributionCalculator(initialData) {
 
   /**
    * Calculate original annual contributions for comparison
+   * Uses ORIGINAL contribution values with CURRENT baseline (salary, match)
    */
   const originalAnnualContributions = useMemo(() => {
     return calculateTotalAnnualContribution(
-      originalValues.type,
-      originalValues.amount,
-      originalValues.salary,
-      originalValues.employerMatchRate,
-      originalValues.employerMatchCap
+      originalContributionValues.type,
+      originalContributionValues.amount,
+      baselineValues.salary,
+      baselineValues.employerMatchRate,
+      baselineValues.employerMatchCap
     );
-  }, [originalValues]);
+  }, [originalContributionValues, baselineValues]);
 
   /**
    * Year-to-date contributions (actual historical data - doesn't change with slider)
@@ -131,20 +143,16 @@ export function useContributionCalculator(initialData) {
   }, [user, originalAnnualContributions.total, annualContributions.total, annualReturnRate]);
 
   /**
-   * Check if any settings have changed from original
+   * Check if CONTRIBUTION settings have changed from original
+   * Only tracks contribution type/amount, NOT baseline values (salary, match)
    * Optimized with useMemo
    */
   const hasChanges = useMemo(() => {
     return (
-      contributionType !== originalValues.type ||
-      contributionAmount !== originalValues.amount ||
-      age !== originalValues.age ||
-      salary !== originalValues.salary ||
-      employerMatchRate !== originalValues.employerMatchRate ||
-      employerMatchCap !== originalValues.employerMatchCap ||
-      annualReturnRate !== originalValues.annualReturnRate
+      contributionType !== originalContributionValues.type ||
+      contributionAmount !== originalContributionValues.amount
     );
-  }, [contributionType, contributionAmount, age, salary, employerMatchRate, employerMatchCap, annualReturnRate, originalValues]);
+  }, [contributionType, contributionAmount, originalContributionValues]);
 
   /**
    * Update contribution type and convert amount if needed
@@ -221,17 +229,13 @@ export function useContributionCalculator(initialData) {
   }, []);
 
   /**
-   * Reset all settings to original values
+   * Reset ONLY contribution settings to original values
+   * Does NOT reset baseline values (salary, match) - those stay at current values
    */
   const reset = useCallback(() => {
-    setContributionType(originalValues.type);
-    setContributionAmount(originalValues.amount);
-    setAge(originalValues.age);
-    setSalary(originalValues.salary);
-    setEmployerMatchRate(originalValues.employerMatchRate);
-    setEmployerMatchCap(originalValues.employerMatchCap);
-    setAnnualReturnRate(originalValues.annualReturnRate);
-  }, [originalValues]);
+    setContributionType(originalContributionValues.type);
+    setContributionAmount(originalContributionValues.amount);
+  }, [originalContributionValues]);
 
   /**
    * Get max contribution amount based on type
@@ -267,7 +271,8 @@ export function useContributionCalculator(initialData) {
       rate: employerMatchRate,
       cap: employerMatchCap,
     },
-    originalValues,
+    originalContributionValues,
+    baselineValues,
 
     // Actions
     handleTypeChange,
