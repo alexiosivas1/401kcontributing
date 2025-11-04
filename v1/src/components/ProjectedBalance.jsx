@@ -37,7 +37,7 @@ export const ProjectedBalance = memo(function ProjectedBalance({
         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
           <PiggyBank className="text-white" size={32} />
         </div>
-        {hasChanges && contributionImpact ? (
+        {hasChanges && contributionImpact && contributionImpact.difference !== 0 ? (
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <span className="text-3xl font-semibold text-gray-500 line-through decoration-2">
