@@ -202,7 +202,7 @@ export function generateMaxCatchupProjection(
   data.push({
     year: 0,
     age: currentAge,
-    catchupBalance: Math.round(balance),
+    catchupBalance: currentAge >= catchupAge ? Math.round(balance) : null,
   });
 
   // Project forward year by year with max contributions from age 50
@@ -222,7 +222,7 @@ export function generateMaxCatchupProjection(
     data.push({
       year,
       age,
-      catchupBalance: Math.round(balance),
+      catchupBalance: age >= catchupAge ? Math.round(balance) : null,
     });
   }
 
