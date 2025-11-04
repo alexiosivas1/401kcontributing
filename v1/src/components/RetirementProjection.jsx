@@ -113,7 +113,18 @@ export const RetirementProjection = memo(function RetirementProjection({
     <div className="h-full flex flex-col">
       {/* Header with Annual Return Rate control */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Retirement Projection</h2>
+        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-1">
+          Assumptions
+          <span className="assumptions-label">
+            ?
+            <span className="assumptions-tooltip">
+              <div className="font-semibold mb-1 text-gray-900">Projection Assumptions</div>
+              <div className="text-[11px] text-gray-700">
+                <p>All retirement projections assume a <span className="font-semibold text-purple-600">7% average annual return</span> on your investments. This is a conservative estimate for long-term retirement accounts invested in diversified portfolios.</p>
+              </div>
+            </span>
+          </span>
+        </h2>
         <div className="text-sm text-gray-600">
           <span>Assumed Annual Return: </span>
           <span className="font-medium text-gray-900">
