@@ -169,12 +169,21 @@ export const ContributionGraph = memo(function ContributionGraph({
             <div className="text-[10px] text-gray-600 mb-2">
               Maxing out contributions (${limits ? ((limits.annual + limits.catchUp) / 1000).toFixed(1) : '30.5'}k/year) from age {limits?.maxAge || 50}
             </div>
-            <div className="flex justify-between text-xs mb-0.5">
-              <span className="text-purple-600">Projected balance:</span>
-              <span className="font-semibold">{formatCurrency(data.catchupBalance, 0)}</span>
+
+            {/* Two-column comparison */}
+            <div className="grid grid-cols-2 gap-2 text-[11px] mb-1">
+              <div>
+                <div className="text-gray-500">Your current plan:</div>
+                <div className="font-semibold text-gray-900">{formatCurrency(data.balance, 0)}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">With max catch-up:</div>
+                <div className="font-semibold text-purple-700">{formatCurrency(data.catchupBalance, 0)}</div>
+              </div>
             </div>
-            <div className="flex justify-between text-xs font-bold text-green-600">
-              <span>Extra savings:</span>
+
+            <div className="flex justify-between text-xs font-bold text-green-600 pt-1 border-t border-gray-200">
+              <span>Potential benefit:</span>
               <span>+{formatCurrency(data.catchupBalance - data.balance, 0)}</span>
             </div>
           </div>
