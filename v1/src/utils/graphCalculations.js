@@ -244,52 +244,6 @@ export function generateMaxCatchupProjection(
 }
 
 /**
- * Calculate the difference between two projections for comparison visualization
- *
- * @param {Array} originalData - Original projection data points
- * @param {Array} newData - New projection data points after changes
- * @returns {Object} Comparison object with delta info
- */
-export function calculateProjectionComparison(originalData, newData) {
-  if (!originalData || !newData || originalData.length !== newData.length) {
-    return null;
-  }
-
-  const finalOriginal = originalData[originalData.length - 1]?.balance || 0;
-  const finalNew = newData[newData.length - 1]?.balance || 0;
-  const difference = finalNew - finalOriginal;
-  const isIncrease = difference > 0;
-
-  // Create comparison data with deltas
-  const comparisonData = newData.map((point, index) => {
-    const originalPoint = originalData[index];
-    return {
-      ...point,
-      originalBalance: originalPoint?.balance,
-      delta: point.balance - (originalPoint?.balance || 0),
-    };
-  });
-
-  return {
-    data: comparisonData,
-    difference,
-    isIncrease,
-    percentChange: finalOriginal > 0 ? (difference / finalOriginal) * 100 : 0,
-  };
-}
-
-/**
- * Format data for YTD view (just current year's months)
- *
- * @param {Array} monthlyData - Full monthly projection data
- * @param {number} monthsElapsed - Current month (0-11)
- * @returns {Array} Filtered data for YTD view
- */
-export function formatYTDView(monthlyData, monthsElapsed) {
-  return monthlyData.filter(point => point.month <= 11);
-}
-
-/**
  * Downsample yearly data for better performance on long projections
  * For projections > 20 years, show every N years instead of every year
  *

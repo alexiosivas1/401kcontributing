@@ -9,7 +9,6 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
-  Area,
 } from 'recharts';
 import { formatCurrency } from '../utils/calculations';
 

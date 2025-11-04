@@ -46,41 +46,4 @@ export const mockUserData = {
   },
 };
 
-/**
- * Get the maximum contribution percentage based on salary
- * Ensures contributions don't exceed IRS limits
- */
-export function getMaxContributionPercent(salary, age, limits) {
-  const applicableLimit = age >= limits.maxAge
-    ? limits.annual + limits.catchUp
-    : limits.annual;
-
-  return Math.min(100, (applicableLimit / salary) * 100);
-}
-
-/**
- * Get current contribution limit based on age
- */
-export function getContributionLimit(age, limits) {
-  return age >= limits.maxAge
-    ? limits.annual + limits.catchUp
-    : limits.annual;
-}
-
-/**
- * Calculate YTD contributions based on current settings
- * Useful for projecting what the rest of the year looks like
- */
-export function calculateRemainingYearProjection(salary, contributionPercent, monthsElapsed) {
-  const monthsRemaining = 12 - monthsElapsed;
-  const annualContribution = salary * (contributionPercent / 100);
-  const monthlyContribution = annualContribution / 12;
-
-  return {
-    monthlyAmount: monthlyContribution,
-    remainingYearTotal: monthlyContribution * monthsRemaining,
-    projectedYearEndTotal: annualContribution,
-  };
-}
-
 export default mockUserData;
